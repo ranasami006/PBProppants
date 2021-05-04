@@ -21,7 +21,7 @@ import FAQs from './Screens/Components/FAQs'
 import DebitCardForm from './Screens/Components/DebitCardForm'
 import FormUpload from './Screens/Components/FormUpload'
 import Disclamer from './Screens/Components/Disclamer'
-
+import AuthLoading from './Screens/Auth/AuthLoading'
 import {
   responsiveWidth,
   responsiveHeight,
@@ -30,9 +30,10 @@ import {
 const Main = () => {
   return (
 
-      <MainStack.Navigator initialRouteName="Login" 
+      <MainStack.Navigator initialRouteName="AuthLoading" 
       screenOptions={{ headerShown: false, gestureEnabled: true, animationEnabled:true,}} >
           <MainStack.Screen name="Login" component={Login} />
+          <MainStack.Screen name="AuthLoading" component={AuthLoading} />
           <MainStack.Screen name="CreateAccount" component={CreateAccount} />
           <MainStack.Screen name="MemberPage" component={MemberPage} />   
           <MainStack.Screen name="InvestmentPage" component={InvestmentPage} />

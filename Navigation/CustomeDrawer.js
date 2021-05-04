@@ -11,8 +11,8 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
-  AsyncStorage,
   Alert,
+  ToastAndroid,
 } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import {
@@ -20,7 +20,8 @@ import {
   responsiveHeight,
   responsiveFontSize,
 } from 'react-native-responsive-dimensions';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LogOut } from '../Backend/apiFile';
 export default class CustomDrawer extends Component {
   state = {
     email: '',
@@ -28,6 +29,20 @@ export default class CustomDrawer extends Component {
 
   async componentDidMount() {
 
+  }
+
+  async logUserOut(){
+    let data = await LogOut()
+    if (data.response) {
+        await AsyncStorage.removeItem('token')
+        await AsyncStorage.removeItem('user_id')
+        this.props.navigation.navigate("Login")
+    }
+    else {
+       
+        ToastAndroid.show(data.message, ToastAndroid.LONG);
+    }
+    
   }
 
   render() {
@@ -112,7 +127,8 @@ export default class CustomDrawer extends Component {
               </TouchableOpacity>
               <TouchableOpacity
               onPress={() => {
-                this.props.navigation.navigate("Login")
+                this.logUserOut()
+               
               }}
               style={[styles.tab,{marginTop:responsiveHeight(6)}]}>
                 <Text style={styles.text1}>

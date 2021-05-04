@@ -1,6 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { StyleSheet, Alert, Text, View, Dimensions, TextInput, Modal, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native';
+import { StyleSheet, Alert, Text, View, 
+    ActivityIndicator,
+    Dimensions, TextInput, Modal, FlatList, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import Constants from 'expo-constants';
@@ -14,6 +16,8 @@ import {
     CollapseHeader,
     CollapseBody,
 } from 'accordion-collapse-react-native';
+import { getFaqs } from "../../Backend/apiFile"
+import { FA5Style } from '@expo/vector-icons/build/FontAwesome5';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -21,16 +25,42 @@ export default class FAQs extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            items: [
-                { title: 'hi', body: 'hello' },
-                { title: 'hi2', body: 'hello2' }
-            ]
+            data: [
+              
+            ],
+            success:true,
         }
     }
     async componentDidMount() {
-
+        await this.setState({success:true})
+        let data = await getFaqs()
+       await this.setState({
+           data:data.response.results,
+           success:false,
+       })
+       // console.log(data.response.results)
     }
-     
+    renderItemRequest = ({ item }) => {
+        return (
+            <View style={styles.questionView}>
+                <Collapse>
+                    <CollapseHeader>
+                        <View style={styles.questionHeader}>
+                            <Text style={styles.textHeader}>{item.question}</Text>
+                            <AntDesign name="downcircle" size={24} color="black" />
+                        </View>
+                    </CollapseHeader>
+                    <CollapseBody>
+                        <Text style={styles.bodyText}>A:
+                                                {item.answer}</Text>
+                    </CollapseBody>
+                </Collapse>
+            </View>
+        );
+    }
+
+
+
     render() {
         const state = this.state;
         return (
@@ -53,9 +83,9 @@ export default class FAQs extends Component {
                                     onPress={() => this.props.navigation.navigate('Login')}
                                     style={styles.buttonaccount}>
                                     <Ionicons name="arrow-back" size={responsiveWidth(5)
-                                      
-                                }
-                                style={{paddingLeft:responsiveHeight(0.5)}}
+
+                                    }
+                                        style={{ paddingLeft: responsiveHeight(0.5) }}
                                         color="white" />
                                     <Text style={styles.textaccount}>Back To Home</Text>
                                 </TouchableOpacity>
@@ -81,95 +111,23 @@ export default class FAQs extends Component {
                             }}
                         />
                         <View style={styles.faq}>
-                            <Text style={{ alignSelf: 'center', 
-                            fontSize: 30, fontWeight: '700', 
-                            padding: responsiveHeight(2) }}>Frequent Asked Question</Text>
-                            <ScrollView style={{marginBottom:responsiveHeight(1)}}>
-                                <View style={styles.questionView}>
-                                    <Collapse>
-                                        <CollapseHeader>
-                                            <View style={styles.questionHeader}>
-                                                <Text style={styles.textHeader}>What is PBP?</Text>
-                                                <AntDesign name="downcircle" size={24} color="black" />
-                                            </View>
-                                        </CollapseHeader>
-                                        <CollapseBody>
-                                            <Text style={styles.bodyText}>A:
-                                                PBP gives investors the opportunity to become investors by investing into the purchase orders that Permian Basin Proppants receives. These orders will be paid for by the company to receive profits, but investors invest in these orders with the company and the company pays a ROI dividend to the investor.</Text>
-                                        </CollapseBody>
-                                    </Collapse>
-                                </View>
-                                <View style={styles.questionView}>
-                                    <Collapse>
-                                        <CollapseHeader>
-                                            <View style={styles.questionHeader}>
-                                                <Text style={styles.textHeader}>How can i become on investor and where my money.</Text>
-                                                <AntDesign name="downcircle" size={24} color="black" />
-                                            </View>
-                                        </CollapseHeader>
-                                        <CollapseBody>
-                                            <Text style={styles.bodyText}>A:
-                                                PBP gives investors the opportunity to become investors by investing into the purchase orders that Permian Basin Proppants receives. These orders will be paid for by the company to receive profits, but investors invest in these orders with the company and the company pays a ROI dividend to the investor.</Text>
-                                        </CollapseBody>
-                                    </Collapse>
-                                </View>
-                                <View style={styles.questionView}>
-                                    <Collapse>
-                                        <CollapseHeader>
-                                            <View style={styles.questionHeader}>
-                                                <Text style={styles.textHeader}>When can i withdraw my money?</Text>
-                                                <AntDesign name="downcircle" size={24} color="black" />
-                                            </View>
-                                        </CollapseHeader>
-                                        <CollapseBody>
-                                            <Text style={styles.bodyText}>A:
-                                                PBP gives investors the opportunity to become investors by investing into the purchase orders that Permian Basin Proppants receives. These orders will be paid for by the company to receive profits, but investors invest in these orders with the company and the company pays a ROI dividend to the investor.</Text>
-                                        </CollapseBody>
-                                    </Collapse>
-                                </View>
-                                <View style={styles.questionView}>
-                                    <Collapse>
-                                        <CollapseHeader>
-                                            <View style={styles.questionHeader}>
-                                                <Text style={styles.textHeader}>How can i become on investor and where my money.</Text>
-                                                <AntDesign name="downcircle" size={24} color="black" />
-                                            </View>
-                                        </CollapseHeader>
-                                        <CollapseBody>
-                                            <Text style={styles.bodyText}>A:
-                                                PBP gives investors the opportunity to become investors by investing into the purchase orders that Permian Basin Proppants receives. These orders will be paid for by the company to receive profits, but investors invest in these orders with the company and the company pays a ROI dividend to the investor.</Text>
-                                        </CollapseBody>
-                                    </Collapse>
-                                </View>
-                                <View style={styles.questionView}>
-                                    <Collapse>
-                                        <CollapseHeader>
-                                            <View style={styles.questionHeader}>
-                                                <Text style={styles.textHeader}>What happens if i need to take my investment out early?</Text>
-                                                <AntDesign name="downcircle" size={24} color="black" />
-                                            </View>
-                                        </CollapseHeader>
-                                        <CollapseBody>
-                                            <Text style={styles.bodyText}>A:
-                                                PBP gives investors the opportunity to become investors by investing into the purchase orders that Permian Basin Proppants receives. These orders will be paid for by the company to receive profits, but investors invest in these orders with the company and the company pays a ROI dividend to the investor.</Text>
-                                        </CollapseBody>
-                                    </Collapse>
-                                </View>
-                                <View style={styles.questionView}>
-                                    <Collapse>
-                                        <CollapseHeader>
-                                            <View style={styles.questionHeader}>
-                                                <Text style={styles.textHeader}>My Investment says I am worth xxx amount why can not i withdraw that money early?</Text>
-                                                <AntDesign name="downcircle" size={24} color="black" />
-                                            </View>
-                                        </CollapseHeader>
-                                        <CollapseBody>
-                                            <Text style={styles.bodyText}>A:
-                                                PBP gives investors the opportunity to become investors by investing into the purchase orders that Permian Basin Proppants receives.</Text>
-                                        </CollapseBody>
-                                    </Collapse>
-                                </View>
-                            </ScrollView>
+                            <Text style={{
+                                alignSelf: 'center',
+                                fontSize: 30, fontWeight: '700',
+                                padding: responsiveHeight(2)
+                            }}>Frequent Asked Question</Text>
+                           <ScrollView style={{marginBottom:responsiveHeight(0)}} >
+                           {!this.state.success?(
+                           
+                            <FlatList data={this.state.data}
+                                horizontal={false}
+                                renderItem={this.renderItemRequest}
+                            />
+                            ):
+                            <ActivityIndicator size={'large'} color={"#F0B04E"}/>
+                            }
+
+                        </ScrollView>
                         </View>
                     </LinearGradient>
 
@@ -192,11 +150,12 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         justifyContent: 'center',
         alignItems: 'center',
+
     },
 
     background: {
         width: windowWidth,
-        //height: windowHeight+90,
+        height: windowHeight,
     },
 
     scrollView: {
@@ -212,8 +171,8 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         borderWidth: 1,
         alignItems: 'center',
-        justifyContent:'space-between',
-        paddingRight:responsiveHeight(1.5)
+        justifyContent: 'space-between',
+        paddingRight: responsiveHeight(1.5)
     },
     textaccount: {
         fontSize: 16,
@@ -230,21 +189,21 @@ const styles = StyleSheet.create({
     },
     faq: {
         backgroundColor: 'white',
-       
         width: '90%',
         alignSelf: 'center',
         marginTop: responsiveHeight(2),
-        marginBottom:responsiveHeight(12),
+        height:'80%',
+        marginBottom: responsiveHeight(20),
         borderRadius: responsiveHeight(2),
-        elevation:10,
+        elevation: 10,
     },
     questionView: {
         alignSelf: 'center',
         width: '97%',
-        height: 120,
+        //height: 120,
         borderRadius: responsiveHeight(2),
         elevation: 3,
-        marginBottom:responsiveHeight(1),
+        marginBottom: responsiveHeight(1),
     },
     questionHeader: {
         justifyContent: 'space-between',
@@ -256,13 +215,12 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold',
     },
-    bodyText:{
-        fontSize: 10,
+    bodyText: {
+        fontSize: 12,
         fontWeight: '500',
-        textAlign:'center',
-        padding:responsiveHeight(1.5),
-        marginTop:responsiveHeight(-2.5)
-
+        textAlign: 'center',
+        padding: responsiveHeight(1.5),
+        marginTop: responsiveHeight(-2.5)
     }
 
 });

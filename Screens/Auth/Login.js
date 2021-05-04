@@ -2,11 +2,14 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import {
     StyleSheet, Text, View, Modal,
-    Dimensions, TextInput, TouchableOpacity, Image, ScrollView, SafeAreaView, ImageBackground
+    Dimensions, TextInput, TouchableOpacity, Image, ScrollView, SafeAreaView, 
+    ImageBackground, ActivityIndicator,ToastAndroid
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {LogIn,updatePassword} from '../../Backend/apiFile'
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -14,12 +17,51 @@ export default class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            modalVisible: false
+            modalVisible: false,
+            success: false,
+            success1: false,
+            password:'',
+            email:'',
+            emailR:"",
         }
     }
     async componentDidMount() {
-
+        
     }
+
+    async loginPress(){
+        await this.setState({ success: true })
+        let data = await LogIn(this.state.email, this.state.password)
+        if (data.response) {
+            await AsyncStorage.setItem('token', data.response.token)
+            await AsyncStorage.setItem('user_id', data.response.user_id)
+            this.props.navigation.navigate('MemberPage');
+        }
+        else {
+            console.log("Else data ", data.message)
+            this.setState({
+                ErrorMessege:data.message,
+                success: false,
+            })
+        }
+        await this.setState({
+            success: false,
+        })
+    }
+
+    async emailReset(){
+        this.setState({success1: true})
+        let data = await updatePassword(this.state.emailR)
+        if (data.response) {
+            ToastAndroid.show('Please check your email for paswword reset', ToastAndroid.LONG);
+        }
+        else {
+            ToastAndroid.show(data.message, ToastAndroid.LONG);
+           
+        }
+        this.setState({success1: false, modalVisible: false })
+    }
+    
 
     render() {
         return (
@@ -47,19 +89,20 @@ export default class Login extends Component {
                             <Text style={{ fontSize: 14, fontWeight: '500', paddingLeft: responsiveHeight(2) }}>No worry, we are here to help key in the your email to start changing the password.</Text>
                             <TextInput
                                 style={styles.textinputModel}
-                                placeholder={'Enter your user name'}
+                                placeholder={'Enter your email'}
                                 placeholderTextColor={'grey'}
-                                onSubmitEditing={() => this._password.focus()}
+                                //onSubmitEditing={() => this._password.focus()}
                                 returnKeyType="next"
                                 returnKeyLabel="next"
-                                value={this.state.email}
+                                value={this.state.emailR}
                                 onChangeText={(text) => {
-                                    this.setState({ email: text });
+                                    this.setState({ emailR: text });
                                 }}
                             />
                             <TouchableOpacity
                                 onPress={() => {
-                                    this.setState({ modalVisible: false })
+                                    this.emailReset()
+                                   
                                 }}
                                 style={styles.buttonReset}>
                                 <LinearGradient
@@ -67,7 +110,12 @@ export default class Login extends Component {
                                     start={[0, 0]}
                                     end={[1, 1]}
                                     style={styles.gradient}>
+                                         {
+                                            this.state.success1 ?
+                                                <ActivityIndicator size={'small'} color={'black'} />
+                                                :
                                     <Text style={styles.text}>Send reset email</Text>
+                                        }
                                 </LinearGradient>
                             </TouchableOpacity>
                         </View>
@@ -127,7 +175,7 @@ export default class Login extends Component {
                                 <TextInput
                                     ref={(input) => this._password = input}
                                     style={styles.textinput}
-                                    secureTextEntry={this.state.secured}
+                                    secureTextEntry={true}
                                     placeholder={'Enter Password'}
                                     placeholderTextColor={'grey'}
                                     placeholderStyle={{ marginLeft: responsiveHeight(5) }}
@@ -140,18 +188,23 @@ export default class Login extends Component {
 
                                 <TouchableOpacity
                                     onPress={() => {
-                                        this.props.navigation.navigate('MemberPage');
-                                    }}
+                                       this.loginPress()
+                                        }}
                                     style={styles.button}>
                                     <LinearGradient
                                         colors={['#F0B04E', '#F58B56']}
                                         start={[0, 0]}
                                         end={[1, 1]}
                                         style={styles.gradient}>
+                                             {
+                                            this.state.success ?
+                                                <ActivityIndicator size={'small'} color={'black'} />
+                                                :
                                         <Text style={styles.text}>Login</Text>
+                                            }
                                     </LinearGradient>
                                 </TouchableOpacity>
-
+                              
                                 <TouchableOpacity
                                     style={{ marginTop: responsiveHeight(2), }}
                                     onPress={() => {
@@ -163,7 +216,8 @@ export default class Login extends Component {
                                     </Text>
                                 </TouchableOpacity>
                             </View>
-
+                            <Text style={{ color: 'red', textAlign: 'center' }}>{this.state.ErrorMessege} </Text>
+                        
                             <TouchableOpacity
 
                                 onPress={() => {

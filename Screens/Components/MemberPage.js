@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TextInput, ImageBackground, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, TextInput, ImageBackground, TouchableOpacity, Image, ScrollView, SafeAreaView,ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import Constants from 'expo-constants';
@@ -10,19 +10,75 @@ import { TableView } from "react-native-responsive-table"
 import { Table, Row, Rows } from 'react-native-table-component';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
+import { getinvestmenttransaction } from '../../Backend/apiFile'
 export default class MemberPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
             tableHead: ['Transaction ID', 'Investment Name', 'Investment Date', 'Investment Amount,$', 'Ammendment Date', 'Equity'],
             tableData: [
-                ['2021MAR214708', 'CREDIT CARD', 'March 21, 2021', '100.0', 'March 21, 2021', 'pending for Annoucment'],
-                ['2021MAR214709', 'CREDIT CARD', 'April 22, 2021', '200.0', 'March 20, 2021', 'pending for Annoucment'],
-            ]
+                // ['2021MAR214708',
+                //     'CREDIT CARD',
+                //     'March 21, 2021',
+                //     '100.0',
+                //     'March 21, 2021',
+                //     'pending for Annoucment'],
+                // ['2021MAR214709', 
+                // 'CREDIT CARD', 
+                // 'April 22, 2021', 
+                // '200.0', 
+                // 'March 20, 2021', 
+                // 'pending for Annoucment'],
+            ],
+            success:true,
         }
     }
     async componentDidMount() {
+       
+        let data = await getinvestmenttransaction()
+        
+         
+         
+        let dataShow= data.response.results
+          var arr = [];
+        for(var x = 0; x < dataShow.length; x++){
+            arr[x] = [];    
+            for(var y = 0; y < 6; y++){ 
+                
+                if(y==0){
+                 arr[x][y] = dataShow[x]['transaction ID']
+                }  
+                  if(y==1){
+                     arr[x][y] = dataShow[x]['investment name']
+                 }
+                  if(y==2){
+                     arr[x][y] = dataShow[x]['Created Date']
+                 }
+                  if(y==3){
+                     arr[x][y] = dataShow[x]['payout amount']
+                 }
+                 if(y==4){
+                     arr[x][y] = dataShow[x]['Modified Date']
+                 }
+                 if(y==5){
+                     arr[x][y] = dataShow[x]['_type']
+                 }
+
+            }    
+        }
+        
+        await this.setState({
+            tableData:arr,
+            success:false,
+
+        })
+       
+       
+       // console.log("Umer bahi", dataShow[0]['_id'])
+       // console.log("Umer bahi", this.state.tableData)
+        
+       
+
 
     }
 
@@ -73,7 +129,7 @@ export default class MemberPage extends Component {
                             <Image source={require('../../assets/dashboardicon1.png')} style={{
                                 width: windowWidth / 2.5,
                                 height: windowHeight / 4.8,
-                                alignSelf: 'center', marginTop:responsiveHeight(-6)
+                                alignSelf: 'center', marginTop: responsiveHeight(-6)
                             }} />
                             <Text style={{ fontWeight: '700', fontSize: 30, marginTop: responsiveHeight(-4), marginLeft: responsiveHeight(1) }}>Hi,</Text>
                             <View style={{ width: windowWidth / 1.5 }}>
@@ -108,7 +164,11 @@ export default class MemberPage extends Component {
                                 }}
                                 horizontal={true}>
 
+                            {this.state.success?
+                            (
+                                 <ActivityIndicator size ={'large'} color={"#F0B04E"} style={{alignSelf:'center',justifyContent:'center',marginHorizontal:windowWidth/2}}/>   
 
+                            ):(
                                 <Table
                                 >
                                     <LinearGradient
@@ -119,118 +179,19 @@ export default class MemberPage extends Component {
                                     >
                                         <Row data={state.tableHead} style={styles.head} textStyle={styles.texttableHead} />
                                     </LinearGradient>
-                                    <Rows data={state.tableData} textStyle={styles.texttable} style={styles.bodytable} />
-                                </Table>
 
+                                    <Rows data={this.state.tableData} textStyle={styles.texttable} style={styles.bodytable} />
+
+                                </Table>
+)}
                             </ScrollView>
+                            
+                          
                         </View>
                     </View>
 
 
-                    {/* <LinearGradient
-                        start={[1, 0]}
-                        end={[1, 0]}
-                        colors={['#F0B04E', '#F58B56']}
-                        style={styles.background}
-                    >
-                        <View
-                            style={styles.uperbackground}>
-                        </View>
-                        <LinearGradient
-                            start={[0, 0]}
-                            end={[1, 1]}
-                            colors={['#F0B04E', '#F58B56']}
-                            style={styles.backgroundGr}
-                        >
-                            <Header
-                                statusBarProps={{ barStyle: 'light', backgroundColor: 'transparent' }}
-                                barStyle="light-content" // or directly
-                                leftComponent={
-                                    <TouchableOpacity
-                                        onPress={() => this.props.navigation.navigate('ViewTutorial')}
-                                        style={styles.buttonaccount}>
 
-                                        <Text style={styles.textaccount}>View Toturial</Text>
-                                    </TouchableOpacity>
-                                }
-                                rightComponent={
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            this.props.navigation.openDrawer();
-                                        }}>
-                                        <Entypo
-                                            name={'menu'}
-                                            color={'#000'}
-                                            size={responsiveWidth(7)}
-                                            style={styles.icon}
-                                        />
-                                    </TouchableOpacity>
-                                }
-                                containerStyle={{
-                                    backgroundColor: 'transparent',
-                                    justifyContent: 'space-around',
-                                    marginTop: responsiveHeight(2),
-                                    borderBottomWidth: 0,
-                                }}
-                            />
-                        </LinearGradient>
-
-                        <View style={styles.bottomView}>
-                            <Image source={require('../../assets/dashboardicon1.png')} style={{
-                                 width: windowWidth / 2.5,
-                                 height: windowHeight / 4.8,
-                                alignSelf: 'center', marginTop: Constants.statusBarHeight
-                            }} />
-                            <Text style={{ fontWeight: '700', fontSize: 30, marginTop: responsiveHeight(-4), marginLeft: responsiveHeight(1) }}>Hi,</Text>
-                            <View style={{ width: windowWidth / 1.5 }}>
-                                <Text style={{
-                                    fontWeight: '400', fontSize: 14,
-                                    marginLeft: responsiveHeight(1),
-
-                                }}>How was your day? Your investment performance look great today. Why not invest more to earn more from the market?</Text>
-                            </View>
-                            <TouchableOpacity
-                        onPress={() => {
-                            this.props.navigation.navigate('InvestmentPage');
-                        }}
-
-                        style={styles.buttonfaq}>
-
-                        <LinearGradient
-                            colors={['#000000', '#CACACA']}
-                            start={[1, 1]}
-                            end={[0, 0]}
-                            style={styles.gradientaccount}>
-                            <Text style={styles.textfaq}>Invest More</Text>
-                        </LinearGradient>
-                    </TouchableOpacity>
-
-
-                    <ScrollView
-                        style={{ width: windowWidth - 20, 
-                            alignSelf: 'center', 
-                            marginBottom: responsiveHeight(5) }}
-                        horizontal={true}>
-
-
-                        <Table
-                        >
-                            <LinearGradient
-                                start={[0, 0]}
-                                end={[1, 0]}
-                                colors={['#F0B04E', '#F58B56']}
-                                style={styles.headbackground}
-                            >
-                                <Row data={state.tableHead} style={styles.head} textStyle={styles.texttableHead} />
-                            </LinearGradient>
-                            <Rows data={state.tableData} textStyle={styles.texttable} style={styles.bodytable}/>
-                        </Table>
-
-                    </ScrollView>
-                        </View>
-
-                    </LinearGradient>
- */}
 
 
                 </ScrollView>
@@ -242,16 +203,17 @@ export default class MemberPage extends Component {
 
 const styles = StyleSheet.create({
     headbackground: {
-        height: 70, width: 1050,
+        height: 70, width: 1550,
         alignContent: 'center',
         justifyContent: 'center',
         alignSelf: 'center'
     },
     bodytable: {
-        width: 1050,
+        width: 1550,
         alignContent: 'center',
         justifyContent: 'center',
-        alignSelf: 'center'
+        alignSelf: 'center',
+        flexDirection: 'row',
     },
 
     texttableHead:
@@ -288,10 +250,10 @@ const styles = StyleSheet.create({
         marginTop: windowWidth / 3.5,
     },
     bottomView: {
-      
+
         backgroundColor: "#fff",
         width: windowWidth,
-        
+
 
     },
     uperView: {

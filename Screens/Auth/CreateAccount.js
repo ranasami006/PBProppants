@@ -1,28 +1,105 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions,ImageBackground, TextInput, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native';
+import {
+    StyleSheet, Text, View, Dimensions, ImageBackground, ActivityIndicator,
+    TextInput, TouchableOpacity, Image, ScrollView, SafeAreaView
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { responsiveFontSize, responsiveHeight,responsiveWidth } from 'react-native-responsive-dimensions';
+import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import Constants from 'expo-constants';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
+import { signUp } from '../../Backend/apiFile'
 export default class CreateAccount extends Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            success: false,
+            ErrorMessege: '',
+            password:'',
         }
     }
+
     async componentDidMount() {
 
     }
+    async ValidationFn() {
+        this.setState({ loader: true, ErrorMessege: '' });
+        let TempCheck = await this.CheckValidateFn();
+
+        switch (TempCheck) {
+            case 0:
+                this.signupuser();
+                break;
+            case 1:
+                this.setState({ loader: false });
+                // alert(this.state.ErrorMessege);
+                break;
+            default:
+                break;
+        }
+    }
+    async CheckValidateFn() {
+
+        //EmailCheck
+        let reg2 = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (reg2.test(this.state.email) === false) {
+            console.log('Email is Not Correct');
+            this.state.email !== undefined && this.state.email !== ''
+                ? this.setState({ ErrorMessege: 'Please enter proper Email Id' })
+                : this.setState({ ErrorMessege: 'Email cannot be empty' });
+            // this.setState({ email: text })
+            return 1;
+        }
+
+ let passwordlength  =this.state.password.length     
+        if (passwordlength<6) {
+            this.state.password === ''
+                ? this.setState({ ErrorMessege: 'Password cannot not be empty' })
+                : this.setState({
+                        ErrorMessege: 'Password should be atleast 6 characters!',
+                    });
+            return 1;
+        }
+        if (this.state.password !== this.state.confirmPassword) {
+            this.setState({
+                ErrorMessege: 'Password not match!',
+            });
+            return 1;
+        }
+
+        return 0;
+    }
+
+    async signupuser() {
+        await this.setState({ success: true })
+        let data = await signUp(this.state.email, this.state.password, this.state.confirmPassword)
+        if (data.response) {
+            console.log(data)
+            alert('Thank you for your registration! Your account is now ready to use.');
+            this.props.navigation.navigate('Login');
+        }
+        else {
+            console.log("Else data ", data.message)
+            this.setState({
+                ErrorMessege:data.message,
+                success: false,
+            })
+        }
+
+        await this.setState({
+            //data:data.response.results,
+            success: false,
+        })
+
+    }
+
 
     render() {
         return (
             <SafeAreaView style={styles.container}>
                 <ScrollView style={styles.scrollView}>
-                <View style={{ backgroundColor: 'white' }}>
+                    <View style={{ backgroundColor: 'white' }}>
                         <ImageBackground style={{ width: windowWidth, height: windowHeight / 3 }}
                             source={require('../../assets/BackgroundPbproppant.png')}
                         >
@@ -72,7 +149,7 @@ export default class CreateAccount extends Component {
                                 <TextInput
                                     ref={(input) => this._password = input}
                                     style={styles.textinput}
-                                    secureTextEntry={this.state.secured}
+                                    secureTextEntry={true}
                                     placeholder={'Enter Password'}
                                     placeholderTextColor={'grey'}
                                     placeholderStyle={{ marginLeft: responsiveHeight(5) }}
@@ -87,43 +164,54 @@ export default class CreateAccount extends Component {
                                 <TextInput
                                     ref={(input) => this._password = input}
                                     style={styles.textinput}
-                                    secureTextEntry={this.state.secured}
+                                    secureTextEntry={true}
                                     placeholder={'Enter Password'}
                                     placeholderTextColor={'grey'}
                                     placeholderStyle={{ marginLeft: responsiveHeight(5) }}
 
-                                    value={this.state.password}
+                                    value={this.state.confirmPassword}
                                     onChangeText={(text) => {
-                                        this.setState({ password: text });
+                                        this.setState({ confirmPassword: text });
                                     }}
                                 />
-                                <TouchableOpacity style={styles.button}>
+                                <TouchableOpacity
+                                    onPress={() => {
+
+                                        this.ValidationFn();
+                                    }}
+                                    style={styles.button}>
+
                                     <LinearGradient
                                         colors={['#F0B04E', '#F58B56']}
                                         start={[0, 0]}
                                         end={[1, 1]}
                                         style={styles.gradient}>
-                                        <Text style={styles.text}>Create Account</Text>
+                                        {
+                                            this.state.success ?
+                                                <ActivityIndicator size={'small'} color={'black'} />
+                                                :
+                                                <Text style={styles.text}>Create Account</Text>
+                                        }
                                     </LinearGradient>
                                 </TouchableOpacity>
 
                             </View>
-
+                            <Text style={{ color: 'red', textAlign: 'center' }}>{this.state.ErrorMessege} </Text>
                             <TouchableOpacity
-                        style={{ marginTop: responsiveHeight(3), }}
-                        onPress={() => {
+                                style={{ marginTop: responsiveHeight(3), }}
+                                onPress={() => {
 
-                            this.props.navigation.navigate('Login');
-                        }}>
-                        <Text style={{ textAlign: 'center', color: 'black', fontSize: 14, padding: responsiveHeight(1.3) }}>Have an account?
+                                    this.props.navigation.navigate('Login');
+                                }}>
+                                <Text style={{ textAlign: 'center', color: 'black', fontSize: 14, padding: responsiveHeight(1.3) }}>Have an account?
                             <Text style={{ fontWeight: '500', fontStyle: 'italic', textDecorationLine: 'underline', }}>Login Here </Text>
-                        </Text>
-                    </TouchableOpacity> 
+                                </Text>
+                            </TouchableOpacity>
 
                         </View>
                     </View>
 
-                
+
                     {/* <LinearGradient
                         start={[1, 0]}
                         end={[1, 0]}
@@ -243,9 +331,9 @@ const styles = StyleSheet.create({
     },
     backgroundGr: {
         width: windowWidth,
-        height: windowHeight /3.1,
+        height: windowHeight / 3.1,
         position: 'absolute',
-        top:0,
+        top: 0,
         borderBottomLeftRadius: responsiveHeight(19)
     },
     background: {
@@ -254,9 +342,9 @@ const styles = StyleSheet.create({
     },
     uperbackground: {
         height: windowHeight / 7,
-        width:windowWidth/3,
+        width: windowWidth / 3,
         backgroundColor: "#fff",
-        marginTop: windowWidth /3.5,
+        marginTop: windowWidth / 3.5,
     },
     bottomView: {
         marginTop: responsiveHeight(-4),
@@ -272,11 +360,11 @@ const styles = StyleSheet.create({
     },
     formView: {
         width: '90%',
-        height: windowHeight/2.2,
+        height: windowHeight / 2.2,
         borderWidth: 5,
         borderColor: '#F58B56',
         alignSelf: 'center',
-         marginTop: Constants.statusBarHeight,
+        marginTop: Constants.statusBarHeight,
         backgroundColor: 'white',
         padding: responsiveHeight(2.5),
         borderRadius: responsiveHeight(2),

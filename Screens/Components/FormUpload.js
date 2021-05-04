@@ -1,6 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, ImageBackground, TextInput, TouchableOpacity, Image, ScrollView, SafeAreaView, FlatList } from 'react-native';
+import { StyleSheet, Text, View, Dimensions,
+    Linking, ImageBackground, TextInput,
+     TouchableOpacity, Image, ScrollView, SafeAreaView, 
+     FlatList } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import Constants from 'expo-constants';
@@ -11,16 +14,21 @@ import { Table, Row, Rows } from 'react-native-table-component';
 import * as DocumentPicker from 'expo-document-picker';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
+import { getwithdrawalforms } from '../../Backend/apiFile'
 export default class FormUpload extends Component {
     constructor(props) {
         super(props);
         this.state = {
             documentArray: [],
+            documentArrayShow:[]
         }
     }
     async componentDidMount() {
-
+        let data = await getwithdrawalforms()
+        await this.setState({
+            documentArrayShow:data.response.results,
+        }) 
+        
     }
     _pickDocument = async () => {
         const { documentArray } = this.state;
@@ -36,7 +44,7 @@ export default class FormUpload extends Component {
         return (
             <SafeAreaView style={styles.container}>
 
-                <ScrollView style={styles.scrollView}>
+               
                     <View style={{ backgroundColor: 'white' }}>
                         <ImageBackground style={{ width: windowWidth, height: windowHeight / 3 }}
                             source={require('../../assets/BackgroundPbproppant.png')}
@@ -73,7 +81,7 @@ export default class FormUpload extends Component {
                                 }}
                             />
                         </ImageBackground>
-                        <View style={styles.bottomView}>
+                        <ScrollView style={styles.bottomView}>
                             <Image source={require('../../assets/dashboardicon1.png')} style={{
                                 width: windowWidth / 2.5,
                                 height: windowHeight / 4.8,
@@ -100,6 +108,25 @@ export default class FormUpload extends Component {
 
 
                                         <Text style={{ fontSize: 14, textAlign: 'center' }}>No document is uploded yet</Text>
+                                    )}
+                                     {
+                                     this.state.documentArrayShow.length > 0 ? (
+                                        this.state.documentArrayShow.map((item, index) => {
+                                           
+                                            return (
+                                                
+                                                <TouchableOpacity
+                                                onPress={()=> Linking.openURL('https://www.pbproppants-invest.com'+item['file'])}
+                                                >
+                                                    <Ionicons name="document-text-outline" size={100} color="#F58B56" style={{ alignSelf: 'center' }} />
+                                                    <Text style={{ fontSize: 14, textAlign: 'center' }}>{item['file name']}</Text>
+                                                </TouchableOpacity>
+                                            );
+                                        })
+                                    ) : (
+
+
+                                        null
                                     )}
                                 </View>
                                 <>
@@ -128,116 +155,8 @@ export default class FormUpload extends Component {
                                 </>
                             </View>
 
-                        </View>
-                    </View>
-
-
-                    {/* <LinearGradient
-                        start={[1, 0]}
-                        end={[1, 0]}
-                        colors={['#F0B04E', '#F58B56']}
-                        style={styles.background}
-                    >
-                        <View
-                            style={styles.uperbackground}>
-                        </View>
-                        <LinearGradient
-                            start={[0, 0]}
-                            end={[1, 1]}
-                            colors={['#F0B04E', '#F58B56']}
-                            style={styles.backgroundGr}
-                        >
-                            <Header
-                                statusBarProps={{ barStyle: 'light', backgroundColor: 'transparent' }}
-                                barStyle="light-content" // or directly
-                                leftComponent={
-                                    <TouchableOpacity
-                                        onPress={() => this.props.navigation.navigate('ViewTutorial')}
-                                        style={styles.buttonaccount}>
-
-                                        <Text style={styles.textaccount}>View Toturial</Text>
-                                    </TouchableOpacity>
-                                }
-                                rightComponent={
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            this.props.navigation.openDrawer();
-                                        }}>
-                                        <Entypo
-                                            name={'menu'}
-                                            color={'#000'}
-                                            size={responsiveWidth(7)}
-                                            style={styles.icon}
-                                        />
-                                    </TouchableOpacity>
-                                }
-                                containerStyle={{
-                                    backgroundColor: 'transparent',
-                                    justifyContent: 'space-around',
-                                    marginTop: responsiveHeight(2),
-                                    borderBottomWidth: 0,
-                                }}
-                            />
-                        </LinearGradient>
-
-                        <View style={styles.bottomView}>
-                            <Image source={require('../../assets/dashboardicon1.png')} style={{
-                                width: windowWidth / 2.5,
-                                height: windowHeight / 3.5,
-                                alignSelf: 'center', marginTop: Constants.statusBarHeight
-                            }} />
-                        </View>
-
-                    </LinearGradient>
-                    <View style={styles.formView}>
-                        <View style={styles.uperForm}>
-                            <Text style={styles.upperFormText}>Withdrawal Form</Text>
-                            <Text style={styles.upperFormText}>Filled up the form?</Text>
-                        </View>
-                        <View style={{ alignSelf: 'center', marginTop: responsiveHeight(1.5) }}>
-
-                            {this.state.documentArray.length > 0 ? (
-                                this.state.documentArray.map((item,index)=>{
-                                            return (
-                                                <View>
-                                                <Ionicons name="document-text-outline" size={100} color="#F58B56" style={{alignSelf:'center'}} /> 
-                                                <Text style={{fontSize:14,textAlign:'center'}}>{item.name}</Text>
-                                                </View>
-                                            );
-                                })             
-                            ) : (
-                              
-
-                                <Text style={{fontSize:14,textAlign:'center'}}>No document is uploded yet</Text>
-                                )}
-                        </View>
-                        <>
-                            <TouchableOpacity
-                                onPress={this._pickDocument}
-                                style={styles.button}>
-                                <LinearGradient
-                                    colors={['#fff', '#fff']}
-                                    start={[0, 0]}
-                                    end={[1, 1]}
-                                    style={styles.gradient}>
-                                    <Text style={styles.text}>Click hehe to your upload with awal form</Text>
-                                </LinearGradient>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={this._pickDocument1}
-                                style={styles.button}>
-                                <LinearGradient
-                                    colors={['#99D3FF', '#99D3FF']}
-                                    start={[0, 0]}
-                                    end={[1, 1]}
-                                    style={styles.gradient}>
-                                    <Text style={styles.text}>Submit</Text>
-                                </LinearGradient>
-                            </TouchableOpacity>
-                        </>
-                    </View> */}
-
-                </ScrollView>
+                        </ScrollView>
+                    </View>    
             </SafeAreaView>
 
         );
@@ -292,7 +211,7 @@ const styles = StyleSheet.create({
     },
     formView: {
         width: '100%',
-        height: windowHeight,
+        //height: windowHeight,
         marginTop: responsiveHeight(3.8),
         backgroundColor: '#fff',
         alignContent: 'center',
