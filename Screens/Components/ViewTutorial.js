@@ -32,7 +32,7 @@ export default class ViewTutorial extends Component {
         // that.setState({
         //     //Setting the data source
         //     dataSource: items,
-        // });
+        // });        
     }
 
     render() {

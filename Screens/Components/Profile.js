@@ -9,7 +9,7 @@ import { Entypo, Ionicons, AntDesign } from '@expo/vector-icons';
 import { RadioButton } from 'react-native-paper';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
+import {getProfileData} from '../../Backend/apiFile'
 export default class Profile extends Component {
     constructor(props) {
         super(props);
@@ -23,10 +23,28 @@ export default class Profile extends Component {
             modalVisible: false,
             secondView: false,
             checked: 'first',
+            userData:{}
         }
     }
     async componentDidMount() {
-    }
+        let data = await getProfileData()
+        if(data.response){
+            this.setState({
+                userData:data.response,
+                email:data.response.authentication.email.email,
+                username:data.response.username,
+                membership_plan:data.response['membership plan'],
+                user_referral_code:data.response['user referral code']
+            })
+           console.log(this.state.membership_plan) 
+        }
+        else{
+            ToastAndroid.show
+            ( data.body.message,
+             ToastAndroid.SHORT);
+        }
+     }
+    
 
     render() {
 
@@ -161,7 +179,7 @@ export default class Profile extends Component {
                                     onSubmitEditing={() => this._password.focus()}
                                     returnKeyType="next"
                                     returnKeyLabel="next"
-                                    value={this.state.email}
+                                    value={this.state.username}
                                     onChangeText={(text) => {
                                         this.setState({ email: text });
                                     }}
@@ -204,18 +222,25 @@ export default class Profile extends Component {
                                     placeholderTextColor={'grey'}
                                     placeholderStyle={{ marginLeft: responsiveHeight(5) }}
 
-                                    value={this.state.password}
+                                    value={this.state.user_referral_code}
                                     onChangeText={(text) => {
-                                        this.setState({ password: text });
+                                        this.setState({ user_referral_code: text });
                                     }}
                                 />
                             </View>
                         </View>
 
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: responsiveHeight(4) }}>
+                        <View style={{ flexDirection: 'row', 
+                        justifyContent: 'space-between', 
+                        marginTop: responsiveHeight(4) }}>
                             <View>
-                                <Text style={{ fontSize: 16, fontWeight: '500', paddingLeft: responsiveHeight(3), marginTop: responsiveHeight(1) }}>Your membership plan:</Text>
-                                <Text style={{ fontSize: 18, fontWeight: '400', paddingLeft: responsiveHeight(3), color: "#F78F2A" }}>GOLD</Text>
+                                <Text style={{ fontSize: 16, fontWeight: '500', 
+                                paddingLeft: responsiveHeight(3), 
+                                marginTop: responsiveHeight(1) }}>Your membership plan:</Text>
+                                <Text style={{ fontSize: 18, 
+                                    fontWeight: '400', 
+                                    paddingLeft: responsiveHeight(3), 
+                                    color: "#F78F2A" }}>{this.state.membership_plan}</Text>
                             </View>
                             <TouchableOpacity style={styles.button}
                                 onPress={() => this.setState({ modalVisible: true })}
@@ -240,7 +265,7 @@ export default class Profile extends Component {
                         </TouchableOpacity>
                         <Text style={{ fontSize: 30, fontWeight: '700', textAlign: 'center', marginTop: responsiveHeight(1) }}> Your referral network</Text>
                         <Text style={{ fontSize: 14, fontWeight: '400', textAlign: 'center', marginBottom: responsiveHeight(2), paddingLeft: responsiveHeight(2), paddingRight: responsiveHeight(2) }}> This is the members that invited with your referral code
-                        (Total:0 members invited)</Text>
+                            (Total:0 members invited)</Text>
                     </View>
 
                     {/* <LinearGradient
@@ -485,10 +510,10 @@ const styles = StyleSheet.create({
         marginTop: windowWidth / 3.5,
     },
     bottomView: {
-        
-        marginTop:responsiveHeight(-5),
+
+        marginTop: responsiveHeight(-5),
         width: windowWidth,
-       // borderTopRightRadius: responsiveHeight(15),
+        // borderTopRightRadius: responsiveHeight(15),
     },
     uperView: {
         width: windowWidth,

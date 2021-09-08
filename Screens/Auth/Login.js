@@ -32,6 +32,7 @@ export default class Login extends Component {
     async loginPress(){
         await this.setState({ success: true })
         let data = await LogIn(this.state.email, this.state.password)
+        console.log("Token",data)
         if (data.response) {
             await AsyncStorage.setItem('token', data.response.token)
             await AsyncStorage.setItem('user_id', data.response.user_id)

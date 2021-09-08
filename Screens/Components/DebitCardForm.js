@@ -1,6 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, ImageBackground, TextInput, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native';
+import {
+    StyleSheet, Text, View, Dimensions,
+    ImageBackground, TextInput,
+    TouchableOpacity, Image,
+    ScrollView, SafeAreaView, ToastAndroid
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import Constants from 'expo-constants';
@@ -10,20 +15,77 @@ import { TableView } from "react-native-responsive-table"
 import { Table, Row, Rows } from 'react-native-table-component';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
+import { card_application } from '../../Backend/apiFile'
 export default class DebitCardForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHead: ['Transaction ID', 'Investment Name', 'Investment Date', 'Investment Amount,$', 'Ammendment Date', 'Equity'],
-            tableData: [
-                ['2021MAR214708', 'CREDIT CARD', 'March 21, 2021', '100.0', 'March 21, 2021', 'pending for Annoucment'],
-                ['2021MAR214709', 'CREDIT CARD', 'April 22, 2021', '200.0', 'March 20, 2021', 'pending for Annoucment'],
-            ]
+            name: '',
+            email: '',
+            password: '',
         }
     }
     async componentDidMount() {
 
+    }
+
+    async ValidationFn() {
+        this.setState({ loader: true, ErrorMessege: '' });
+        let TempCheck = await this.CheckValidateFn();
+
+        switch (TempCheck) {
+            case 0:
+                this.submitData();
+                break;
+            case 1:
+                this.setState({ loader: false });
+                // alert(this.state.ErrorMessege);
+                break;
+            default:
+                break;
+        }
+    }
+    async CheckValidateFn() {
+
+        //EmailCheck
+        let reg2 = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (reg2.test(this.state.email) === false) {
+            console.log('Email is Not Correct');
+            this.state.email !== undefined && this.state.email !== ''
+                ? this.setState({ ErrorMessege: 'Please enter proper Email Id' })
+                : this.setState({ ErrorMessege: 'Email cannot be empty' });
+            // this.setState({ email: text })
+            return 1;
+        }
+
+        let namelength = this.state.name.length
+        if (namelength < 3) {
+            this.state.password === ''
+                ? this.setState({ ErrorMessege: 'name cannot not be empty' })
+                : this.setState({
+                    ErrorMessege: 'name should be atleast 3 characters!',
+                });
+            return 1;
+        }
+
+        return 0;
+    }
+
+    async submitData() {
+        let response = await card_application(this.state.name,
+            this.state.email,
+            this.state.address)
+
+            if(response.status == "success") {
+                ToastAndroid.show
+                ( 'Data is uploaded successfully',
+                 ToastAndroid.SHORT);
+            }
+            else{
+                ToastAndroid.show
+                (response.body.message,
+                 ToastAndroid.SHORT);
+            }   
     }
 
     render() {
@@ -76,71 +138,75 @@ export default class DebitCardForm extends Component {
                             }} />
                             <Text style={{ fontWeight: '700', fontSize: 30, marginTop: responsiveHeight(-4), marginLeft: responsiveHeight(1) }}>Hi,</Text>
                             <View style={styles.formView}>
-                        <Text style={{
-                            fontWeight: 'bold', fontSize: 18,
-                            textAlign: 'center',
-                            marginTop: responsiveHeight(0)
-                        }}>Fill out the form to start your application</Text>
+                                <Text style={{
+                                    fontWeight: 'bold', fontSize: 18,
+                                    textAlign: 'center',
+                                    marginTop: responsiveHeight(0)
+                                }}>Fill out the form to start your application</Text>
+ <Text style={{textAlign:'center',color:'red'}}>{this.state.ErrorMessege}</Text>
+                                <View style={[styles.basicView, { marginTop: responsiveHeight(2) }]}>
+                                    <Text style={styles.headertext1}>Your Name:</Text>
+                                    <TextInput
+                                        style={styles.textinput}
+                                        placeholder={'Name'}
+                                        placeholderTextColor={'grey'}
+                                        onSubmitEditing={() => this._password.focus()}
+                                        returnKeyType="next"
+                                        returnKeyLabel="next"
+                                        value={this.state.name}
+                                        onChangeText={(text) => {
+                                            this.setState({ name: text });
+                                        }}
+                                    />
+                                </View>
+                                <View style={[styles.basicView, { marginTop: responsiveHeight(2) }]}>
+                                    <Text style={styles.headertext1}>Your Email:</Text>
+                                    <TextInput
+                                        style={styles.textinput}
+                                        placeholder={'Email'}
+                                        placeholderTextColor={'grey'}
+                                        onSubmitEditing={() => this._password.focus()}
+                                        returnKeyType="next"
+                                        returnKeyLabel="next"
+                                        value={this.state.email}
+                                        onChangeText={(text) => {
+                                            this.setState({ email: text });
+                                        }}
+                                    />
+                                </View>
 
-                        <View style={[styles.basicView, { marginTop: responsiveHeight(2) }]}>
-                            <Text style={styles.headertext1}>Your Name:</Text>
-                            <TextInput
-                                style={styles.textinput}
-                                placeholder={'Name'}
-                                placeholderTextColor={'grey'}
-                                onSubmitEditing={() => this._password.focus()}
-                                returnKeyType="next"
-                                returnKeyLabel="next"
-                                value={this.state.email}
-                                onChangeText={(text) => {
-                                    this.setState({ email: text });
-                                }}
-                            />
-                        </View>
-                        <View style={[styles.basicView, { marginTop: responsiveHeight(2) }]}>
-                            <Text style={styles.headertext1}>Your Email:</Text>
-                            <TextInput
-                                style={styles.textinput}
-                                placeholder={'Email'}
-                                placeholderTextColor={'grey'}
-                                onSubmitEditing={() => this._password.focus()}
-                                returnKeyType="next"
-                                returnKeyLabel="next"
-                                value={this.state.email}
-                                onChangeText={(text) => {
-                                    this.setState({ email: text });
-                                }}
-                            />
-                        </View>
-                      
-                        <View style={[styles.basicView, { marginTop: responsiveHeight(7) }]}>
-                            <Text style={styles.headertext1}>Address for card delivery:</Text>
-                            <TextInput
-                                style={[styles.textinput,{height: '300%',}]}
-                                placeholder={'Address for card delivery'}
-                                placeholderTextColor={'grey'}
-                                onSubmitEditing={() => this._password.focus()}
-                                returnKeyType="next"
-                                returnKeyLabel="next"
-                                value={this.state.email}
-                                onChangeText={(text) => {
-                                    this.setState({ email: text });
-                                }}
-                            />
-                        </View>
-      
-                        <TouchableOpacity style={styles.button}>
-                            <LinearGradient
-                                colors={['#99D3FF', '#99D3FF']}
-                                start={[0, 0]}
-                                end={[1, 1]}
-                                style={styles.gradient}>
-                                <Text style={styles.text}>Submit</Text>
-                            </LinearGradient>
-                        </TouchableOpacity>
-                    </View>
+                                <View style={[styles.basicView, { marginTop: responsiveHeight(7) }]}>
+                                    <Text style={styles.headertext1}>Address for card delivery:</Text>
+                                    <TextInput
+                                        style={[styles.textinput, { height: '300%', }]}
+                                        placeholder={'Address for card delivery'}
+                                        placeholderTextColor={'grey'}
+                                        onSubmitEditing={() => this._password.focus()}
+                                        returnKeyType="next"
+                                        returnKeyLabel="next"
+                                        value={this.state.address}
+                                        onChangeText={(text) => {
+                                            this.setState({ address: text });
+                                        }}
+                                    />
+                                </View>
+                               
+                                <TouchableOpacity
+                                    onPress={() =>
+                                        this.ValidationFn()
+                                    }
+                                    style={styles.button}>
+                                    <LinearGradient
+                                        colors={['#99D3FF', '#99D3FF']}
+                                        start={[0, 0]}
+                                        end={[1, 1]}
+                                        style={styles.gradient}>
+                                        <Text style={styles.text}>Submit</Text>
+                                    </LinearGradient>
+                                </TouchableOpacity>
+                            </View>
 
-                        
+
                         </View>
                     </View>
                     {/* <LinearGradient

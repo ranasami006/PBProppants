@@ -72,14 +72,7 @@ export default class MemberPage extends Component {
             success:false,
 
         })
-       
-       
-       // console.log("Umer bahi", dataShow[0]['_id'])
-       // console.log("Umer bahi", this.state.tableData)
-        
-       
-
-
+    
     }
 
     render() {

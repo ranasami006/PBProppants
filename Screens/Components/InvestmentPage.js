@@ -1,6 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { StyleSheet, Alert, Text, View, Dimensions, TextInput, Modal, ImageBackground, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native';
+import {
+    StyleSheet, Alert, Text, View, Dimensions,
+    TextInput, Modal, ImageBackground,
+    TouchableOpacity, Image, ScrollView,
+    SafeAreaView, FlatList
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import Constants from 'expo-constants';
@@ -8,6 +13,7 @@ import { Header } from 'react-native-elements'
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import { TableView } from "react-native-responsive-table"
 import { Table, Row, Rows } from 'react-native-table-component';
+import { getinvestmentdatabase } from '../../Backend/apiFile';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -15,16 +21,23 @@ export default class InvestmentPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            min_amount:0,
             modalVisible: false,
             tableHead: ['Transaction ID', 'Investment Name', 'Investment Date', 'Investment Amount,$', 'Ammendment Date', 'Equity'],
             tableData: [
                 ['2021MAR214708', 'CREDIT CARD', 'March 21, 2021', '100.0', 'March 21, 2021', 'pending for Annoucment'],
                 ['2021MAR214709', 'CREDIT CARD', 'April 22, 2021', '200.0', 'March 20, 2021', 'pending for Annoucment'],
-            ]
+            ],
+            data: [],
         }
     }
     async componentDidMount() {
+        let data1 = await getinvestmentdatabase()
+       await this.setState({
+            data: data1.response.results,
 
+        })
+        console.log("PAK", data1.response.results[0])
     }
 
     render() {
@@ -58,7 +71,7 @@ export default class InvestmentPage extends Component {
                                     </TouchableOpacity>
                                 </View>
                                 <TextInput
-                                    ref={(input) => this._password = input}
+                                    // ref={(input) => this._password = input}
                                     style={styles.textinput}
                                     //secureTextEntry={this.state.secured}
                                     placeholder={'I authorise to PBP to invest on Pioneer Orange Crew PO# 0134 with the amount of $5,000.00. '}
@@ -76,16 +89,16 @@ export default class InvestmentPage extends Component {
                                     style={[styles.textinput, { height: '10%' }]}
                                     placeholder={'5000$'}
                                     placeholderTextColor={'grey'}
-                                    onSubmitEditing={() => this._password.focus()}
+                                    // onSubmitEditing={() => this._password.focus()}
                                     returnKeyType="next"
                                     returnKeyLabel="next"
-                                    value={this.state.email}
+                                    value={this.state.min_amount}
                                     onChangeText={(text) => {
-                                        this.setState({ email: text });
+                                        this.setState({ min_amount: text });
                                     }}
                                 />
 
-                                <Text style={styles.textStyle}>MEA is $5,000.00 </Text>
+                                <Text style={styles.textStyle}>MEA is ${this.state.min_amount} </Text>
 
                                 <TouchableOpacity
                                     onPress={() => {
@@ -158,379 +171,131 @@ export default class InvestmentPage extends Component {
                             />
                         </ImageBackground>
                         <View style={styles.bottomView}>
-                            <Text style={{ 
-                                fontWeight: '700', fontSize: 30, 
-                            marginTop: responsiveHeight(0), 
-                            marginLeft: responsiveHeight(1),
-                            paddingLeft:responsiveHeight(1) }}>Investment Page</Text>
-                            <View style={{ width: windowWidth-90,paddingLeft:responsiveHeight(1) }}>
+                            <Text style={{
+                                fontWeight: '700', fontSize: 30,
+                                marginTop: responsiveHeight(0),
+                                marginLeft: responsiveHeight(1),
+                                paddingLeft: responsiveHeight(1)
+                            }}>Investment Page</Text>
+                            <View style={{ width: windowWidth - 90, paddingLeft: responsiveHeight(1) }}>
                                 <Text style={{
                                     fontWeight: '400', fontSize: 14,
                                     marginLeft: responsiveHeight(1),
 
                                 }}>
-                                Check all the details before submitting your investment to the market. Bear in mind on the refund policy and costs.</Text>
+                                    Check all the details before submitting your investment to the market. Bear in mind on the refund policy and costs.</Text>
                                 <Text style={{
                                     fontWeight: '400', fontSize: 14,
-                                    marginLeft: responsiveHeight(1),marginTop:responsiveHeight(1)
+                                    marginLeft: responsiveHeight(1), marginTop: responsiveHeight(1)
 
                                 }}>
-                                 *MEA = Minimum Entry Amount
-   
-                           </Text>    
+                                    *MEA = Minimum Entry Amount
+
+                                </Text>
                             </View>
 
-                    <View style={{marginTop:responsiveHeight(3)}}>
-                        <LinearGradient
-                            colors={['#FF6B16', '#FFD597']}
-                            start={[1, 1]}
-                            end={[0, 0]}
-                            style={styles.gradientaccount}>
-                        <View style={{
-                            flexDirection:'row',
-                            justifyContent:'space-between',
-                            alignContent:'center',
-                            alignItems:'center',
-                            
-                            }} >
-                            <Text style={styles.headertext}>Investment Page</Text>
-                            <Text style={styles.headertext}>Investment Type</Text>
-                        </View>
-                        
-                        </LinearGradient>
-                       <View style={{
-                           flexDirection:'row',
-                          justifyContent: 'space-between',
-                          width:"95%",padding:2.5,
-       
-                        }} >
-                            <Text style={styles.headertext}>Pro Petro PO #0121</Text>
-                            <Text style={styles.headertext}>Equity Market</Text>
-                        </View> 
-                        <Text style={{textAlign:'left',
-                            fontSize:14,fontWeight:'700',
-                            paddingLeft:responsiveHeight(3),color:'#F78F2A',marginTop:responsiveHeight(-2)
-                            }}>Investment Description</Text>    
-                            <Text style={{textAlign:'left',
-                            fontSize:14,fontWeight:'500',
-                            paddingLeft:responsiveHeight(3),marginTop:responsiveHeight(1)
-                            }}>Founded by Electronic Order Received</Text>  
-                            <Text style={{textAlign:'left',
-                            fontSize:14,fontWeight:'500',
-                            paddingLeft:responsiveHeight(3),marginTop:responsiveHeight(1),width:windowWidth/1.3
-                            }}>Purchase Order is Available for Investment up to $250,000. 
-                            Purchase order comes with 60 day P&L with R.O.I at Gold 10% Platinum 20% 
-                            Diamond 30% M.E.A is Gold Plan. Like to Upgrade your plan Its Easy 
-                            just go to Pricing Plans and click upgrade your plan today.</Text>  
-                        <View style={{
-                            flexDirection:'row',
-                            justifyContent:'space-between',
-                            alignContent:'center',
-                            alignItems:'center',
-                            paddingLeft:6,
-                            }} >
-                             <Text style={[styles.headertext,{color:'#F78F2A',}]}>MEA, $</Text>
-                            <Text style={styles.headertext}>5,000.00</Text>
-                        </View> 
-                        <Text style={[styles.headertext,{paddingRight:responsiveHeight(3),
-                            padding:0,textAlign:'right',
-                            alignSelf:'flex-end'}]}>Max. 120,000.00</Text>      
-                        <TouchableOpacity 
-                         onPress={() => {
-                            this.setState({modalVisible:true})
-                          }}
-                        style={styles.button}>
-                            <LinearGradient 
-                            colors={['#FF6B16', '#FFD597']}
-                            start={[1, 1]}
-                            end={[0, 0]}
-                            style={styles.gradient}>
-                                <Text style={styles.text}>Invest Now</Text>
-                            </LinearGradient>
-                        </TouchableOpacity>
-                    <View style={{width:'90%',alignSelf:'center', height:2, backgroundColor:'#FF6B16',
-                    marginBottom:responsiveHeight(2),
-                   marginTop:responsiveHeight(2)
-                }}
-                   >
-                          
-                    </View>      
+                            <View style={{ marginTop: responsiveHeight(3) }}>
+                                <LinearGradient
+                                    colors={['#FF6B16', '#FFD597']}
+                                    start={[1, 1]}
+                                    end={[0, 0]}
+                                    style={styles.gradientaccount}>
+                                    <View style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        alignContent: 'center',
+                                        alignItems: 'center',
 
-                    <View style={{
-                         
-                            flexDirection:'row',
-                           justifyContent: 'space-between',
-                           width:"95%",padding:2.5,
-        
-                         
-                            }} >
-                            <Text style={[styles.headertext,{padding:0,paddingLeft:responsiveHeight(3)}]}>Pioneer/Parsley Merger PO#0001</Text>
-                            <Text style={[styles.headertext,{padding:0,paddingRight:responsiveHeight(3)}]}>Equity Market</Text>
-                        </View> 
-                        <Text style={{textAlign:'left',
-                            fontSize:14,fontWeight:'700',
-                            paddingLeft:responsiveHeight(3),color:'#F78F2A',marginTop:responsiveHeight(1)
-                            }}>Investment Description</Text>    
-                            <Text style={{textAlign:'left',
-                            fontSize:14,fontWeight:'500',
-                            paddingLeft:responsiveHeight(3),marginTop:responsiveHeight(1)
-                            }}>Founded by Electronic Order Received</Text>  
-                            <Text style={{textAlign:'left',
-                            fontSize:14,fontWeight:'500',
-                            paddingLeft:responsiveHeight(3),marginTop:responsiveHeight(1),width:windowWidth/1.3
-                            }}>Purchase Order is Available for Investment up to $250,000. 
-                            Purchase order comes with 60 day P&L with R.O.I at Gold 10% Platinum 20% 
-                            Diamond 30% M.E.A is Gold Plan. Like to Upgrade your plan Its Easy 
-                            just go to Pricing Plans and click upgrade your plan today.</Text>  
-                        <View style={{
-                            flexDirection:'row',
-                            justifyContent:'space-between',
-                            alignContent:'center',
-                            alignItems:'center',
-                            paddingLeft:6,
-                            }} >
-                             <Text style={[styles.headertext,{color:'#F78F2A',}]}>MEA, $</Text>
-                            <Text style={styles.headertext}>5,000.00</Text>
-                        </View> 
-                        <Text style={[styles.headertext,{paddingRight:responsiveHeight(3),
-                            padding:0,textAlign:'right',
-                            alignSelf:'flex-end'}]}>Max. 120,000.00</Text>      
-                        <TouchableOpacity style={styles.button}>
-                            <LinearGradient 
-                            colors={['#FF6B16', '#FFD597']}
-                            start={[1, 1]}
-                            end={[0, 0]}
-                            style={styles.gradient}>
-                                <Text style={styles.text}>Invest Now</Text>
-                            </LinearGradient>
-                        </TouchableOpacity>
-                    <View style={{width:'90%',alignSelf:'center', height:2, backgroundColor:'#FF6B16',
-                    marginBottom:responsiveHeight(2),
-                   marginTop:responsiveHeight(2)
-                }}
-                   >
-                          
-                    </View>      
+                                    }} >
+                                        <Text style={styles.headertext}>Investment Page</Text>
+                                        <Text style={styles.headertext}>Investment Type</Text>
+                                    </View>
+
+                                </LinearGradient>
+                                <FlatList
+                                    data={this.state.data}
+                                    renderItem={({ item, index }) => {
+                                        return (
+                                            <>
+
+                                                <View style={{
+                                                    flexDirection: 'row',
+                                                    justifyContent: 'space-between',
+                                                    width: "95%", padding: 2.5,
+
+                                                }} >
+                                                    <Text style={styles.headertext}>{item['investment name']}</Text>
+                                                    <Text style={styles.headertext}>{item['investment class']}</Text>
+                                                </View>
+                                                <Text style={{
+                                                    textAlign: 'left',
+                                                    fontSize: 14, fontWeight: '700',
+                                                    paddingLeft: responsiveHeight(3), color: '#F78F2A', marginTop: responsiveHeight(-2)
+                                                }}>Investment Description</Text>
+                                                <Text style={{
+                                                    textAlign: 'left',
+                                                    fontSize: 14, fontWeight: '500',
+                                                    paddingLeft: responsiveHeight(3), marginTop: responsiveHeight(1)
+                                                }}>{item['founder']}</Text>
+                                                <Text style={{
+                                                    textAlign: 'left',
+                                                    fontSize: 14, fontWeight: '500',
+                                                    paddingLeft: responsiveHeight(3), marginTop: responsiveHeight(1), width: windowWidth / 1.3
+                                                }}>{item['investment description']}</Text>
+                                                <View style={{
+                                                    flexDirection: 'row',
+                                                    justifyContent: 'space-between',
+                                                    alignContent: 'center',
+                                                    alignItems: 'center',
+                                                    paddingLeft: 6,
+                                                }} >
+                                                    <Text style={[styles.headertext, { color: '#F78F2A', }]}>MEA, $</Text>
+                                                    <Text style={styles.headertext}>{item['minimum entry amount']}</Text>
+                                                </View>
+                                                <Text style={[styles.headertext, {
+                                                    paddingRight: responsiveHeight(3),
+                                                    padding: 0, textAlign: 'right',
+                                                    alignSelf: 'flex-end'
+                                                }]}>Max. {item['maximum amount']}</Text>
+                                                <TouchableOpacity
+                                                    onPress={() => {
+                                                        this.setState({ 
+                                                            modalVisible: true,
+                                                            min_amount:item['minimum entry amount'] 
+                                                        })
+                                                    }}
+                                                    style={styles.button}>
+                                                    <LinearGradient
+                                                        colors={['#FF6B16', '#FFD597']}
+                                                        start={[1, 1]}
+                                                        end={[0, 0]}
+                                                        style={styles.gradient}>
+                                                        <Text style={styles.text}>Invest Now</Text>
+                                                    </LinearGradient>
+                                                </TouchableOpacity>
+                                                <View style={{
+                                                    width: '90%', alignSelf: 'center', height: 2, backgroundColor: '#FF6B16',
+                                                    marginBottom: responsiveHeight(2),
+                                                    marginTop: responsiveHeight(2)
+                                                }}
+                                                >
+
+                                                </View>
+                                            </>
+
+                                        );
+                                    }}
+                                    keyExtractor={item => item._id}
+                                />
 
 
 
-                </View> 
-                            
+                            </View>
+
                         </View>
 
                     </View>
-                    {/*  
-                    <LinearGradient
-                        start={[1, 0]}
-                        end={[1, 0]}
-                        colors={['#F0B04E', '#F58B56']}
-                        style={styles.background}
-                    >
-                        <View
-                            style={styles.uperbackground}>
-                        </View>
-                        <LinearGradient
-                            start={[0, 0]}
-                            end={[1, 1]}
-                            colors={['#F0B04E', '#F58B56']}
-                            style={styles.backgroundGr}
-                        >
-                            <Header
-                                statusBarProps={{ barStyle: 'light', backgroundColor: 'transparent' }}
-                                barStyle="light-content" // or directly
-                                leftComponent={
-                                    <TouchableOpacity 
-                                    onPress={()=>this.props.navigation.goBack()}
-                                    style={styles.buttonaccount}>
-                                        <Ionicons name="arrow-back"  size={responsiveWidth(5)}
-                                        color="white" />   
-                                        <Text style={styles.textaccount}>Back</Text>
-                                    </TouchableOpacity>
-                                }
-                                rightComponent={
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            this.props.navigation.openDrawer();
-                                        }}>
-                                        <Entypo
-                                            name={'menu'}
-                                            color={'#000'}
-                                            size={responsiveWidth(7)}
-                                            style={styles.icon}
-                                        />
-                                    </TouchableOpacity>
-                                }
-                                containerStyle={{
-                                    backgroundColor: 'transparent',
-                                    justifyContent: 'space-around',
-                                    marginTop: responsiveHeight(2),
-                                    borderBottomWidth: 0,
-                                }}
-                            />
-                        </LinearGradient>
 
-                        <View style={styles.bottomView}>
-                            <Text style={{ fontWeight: '700', fontSize: 30, 
-                            marginTop: responsiveHeight(2.5), 
-                            marginLeft: responsiveHeight(1) }}>Investment Page</Text>
-                            <View style={{ width: windowWidth-90 }}>
-                                <Text style={{
-                                    fontWeight: '400', fontSize: 14,
-                                    marginLeft: responsiveHeight(1),
-
-                                }}>
-                                Check all the details before submitting your investment to the market. Bear in mind on the refund policy and costs.</Text>
-                                <Text style={{
-                                    fontWeight: '400', fontSize: 14,
-                                    marginLeft: responsiveHeight(1),marginTop:responsiveHeight(1)
-
-                                }}>
-                                 *MEA = Minimum Entry Amount
-   
-                           </Text>    
-                            </View>
-
-
-                            <View style={{marginTop:responsiveHeight(3)}}>
-                        <LinearGradient
-                             colors={['#FF6B16', '#FFD597']}
-                            start={[1, 1]}
-                            end={[0, 0]}
-                            style={styles.gradientaccount}>
-                        <View style={{
-                            flexDirection:'row',
-                            justifyContent:'space-between',
-                            alignContent:'center',
-                            alignItems:'center',
-                            
-                            //alignSelf:'center',
-                            }} >
-                            <Text style={styles.headertext}>Investment Page</Text>
-                            <Text style={styles.headertext}>Investment Type</Text>
-                        </View>
-                        
-                        </LinearGradient>
-                       <View style={{
-                            flexDirection:'row',
-                            justifyContent:'space-between',
-                            alignContent:'center',
-                            alignItems:'center',
-                            padding:6,
-                            }} >
-                            <Text style={styles.headertext}>Pro Petro PO #0121</Text>
-                            <Text style={styles.headertext}>Equity Market</Text>
-                        </View> 
-                        <Text style={{textAlign:'left',
-                            fontSize:14,fontWeight:'700',
-                            paddingLeft:responsiveHeight(3),color:'#F78F2A',marginTop:responsiveHeight(-2)
-                            }}>Investment Description</Text>    
-                            <Text style={{textAlign:'left',
-                            fontSize:14,fontWeight:'500',
-                            paddingLeft:responsiveHeight(3),marginTop:responsiveHeight(1)
-                            }}>Founded by Electronic Order Received</Text>  
-                            <Text style={{textAlign:'left',
-                            fontSize:14,fontWeight:'500',
-                            paddingLeft:responsiveHeight(3),marginTop:responsiveHeight(1)
-                            }}>Purchase Order is Available for Investment up to $250,000. 
-                            Purchase order comes with 60 day P&L with R.O.I at Gold 10% Platinum 20% 
-                            Diamond 30% M.E.A is Gold Plan. Like to Upgrade your plan Its Easy 
-                            just go to Pricing Plans and click upgrade your plan today.</Text>  
-                        <View style={{
-                            flexDirection:'row',
-                            justifyContent:'space-between',
-                            alignContent:'center',
-                            alignItems:'center',
-                            paddingLeft:6,
-                            }} >
-                             <Text style={[styles.headertext,{color:'#F78F2A',}]}>MEA, $</Text>
-                            <Text style={styles.headertext}>5,000.00</Text>
-                        </View> 
-                        <Text style={[styles.headertext,{paddingRight:responsiveHeight(3),
-                            padding:0,textAlign:'right',
-                            alignSelf:'flex-end'}]}>Max. 120,000.00</Text>      
-                        <TouchableOpacity 
-                         onPress={() => {
-                            this.setState({modalVisible:true})
-                          }}
-                        style={styles.button}>
-                            <LinearGradient 
-                            colors={['#FF6B16', '#FFD597']}
-                            start={[1, 1]}
-                            end={[0, 0]}
-                            style={styles.gradient}>
-                                <Text style={styles.text}>Invest Now</Text>
-                            </LinearGradient>
-                        </TouchableOpacity>
-                    <View style={{width:'90%',alignSelf:'center', height:2, backgroundColor:'#FF6B16',
-                    marginBottom:responsiveHeight(2),
-                   marginTop:responsiveHeight(2)
-                }}
-                   >
-                          
-                    </View>      
-
-                    <View style={{
-                            flexDirection:'row',
-                            justifyContent:'space-between',
-                            alignContent:'center',
-                            alignItems:'center',
-                            padding:6,
-                            }} >
-                            <Text style={[styles.headertext,{padding:0,paddingLeft:responsiveHeight(3)}]}>Pioneer/Parsley Merger PO#0001</Text>
-                            <Text style={[styles.headertext,{padding:0,paddingRight:responsiveHeight(3)}]}>Equity Market</Text>
-                        </View> 
-                        <Text style={{textAlign:'left',
-                            fontSize:14,fontWeight:'700',
-                            paddingLeft:responsiveHeight(3),color:'#F78F2A',marginTop:responsiveHeight(1)
-                            }}>Investment Description</Text>    
-                            <Text style={{textAlign:'left',
-                            fontSize:14,fontWeight:'500',
-                            paddingLeft:responsiveHeight(3),marginTop:responsiveHeight(1)
-                            }}>Founded by Electronic Order Received</Text>  
-                            <Text style={{textAlign:'left',
-                            fontSize:14,fontWeight:'500',
-                            paddingLeft:responsiveHeight(3),marginTop:responsiveHeight(1)
-                            }}>Purchase Order is Available for Investment up to $250,000. 
-                            Purchase order comes with 60 day P&L with R.O.I at Gold 10% Platinum 20% 
-                            Diamond 30% M.E.A is Gold Plan. Like to Upgrade your plan Its Easy 
-                            just go to Pricing Plans and click upgrade your plan today.</Text>  
-                        <View style={{
-                            flexDirection:'row',
-                            justifyContent:'space-between',
-                            alignContent:'center',
-                            alignItems:'center',
-                            paddingLeft:6,
-                            }} >
-                             <Text style={[styles.headertext,{color:'#F78F2A',}]}>MEA, $</Text>
-                            <Text style={styles.headertext}>5,000.00</Text>
-                        </View> 
-                        <Text style={[styles.headertext,{paddingRight:responsiveHeight(3),
-                            padding:0,textAlign:'right',
-                            alignSelf:'flex-end'}]}>Max. 120,000.00</Text>      
-                        <TouchableOpacity style={styles.button}>
-                            <LinearGradient 
-                            colors={['#FF6B16', '#FFD597']}
-                            start={[1, 1]}
-                            end={[0, 0]}
-                            style={styles.gradient}>
-                                <Text style={styles.text}>Invest Now</Text>
-                            </LinearGradient>
-                        </TouchableOpacity>
-                    <View style={{width:'90%',alignSelf:'center', height:2, backgroundColor:'#FF6B16',
-                    marginBottom:responsiveHeight(2),
-                   marginTop:responsiveHeight(2)
-                }}
-                   >
-                          
-                    </View>      
-
-
-
-                </View> 
-                            
-                        </View>
-
-                    </LinearGradient> */}
 
 
 
@@ -591,7 +356,7 @@ const styles = StyleSheet.create({
 
     headertext: {
         textAlign: 'left',
-        fontSize: 14, 
+        fontSize: 14,
         fontWeight: '500',
         padding: responsiveHeight(3)
     },
@@ -620,9 +385,9 @@ const styles = StyleSheet.create({
         marginTop: windowWidth / 3.5,
     },
     bottomView: {
-         backgroundColor: "transparent",
+        backgroundColor: "transparent",
         width: windowWidth,
-       marginTop:responsiveHeight(-5)
+        marginTop: responsiveHeight(-5)
 
     },
     uperView: {
@@ -670,7 +435,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: responsiveHeight(2),
         marginTop: responsiveHeight(1),
-      
+
 
     },
     buttonModel: {
@@ -701,8 +466,8 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: 'white',
         textAlign: 'right',
-        paddingRight:responsiveHeight(1),
-        fontWeight:'bold',
+        paddingRight: responsiveHeight(1),
+        fontWeight: 'bold',
     },
     gradientaccount: {
         width: '95%',
@@ -710,7 +475,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignContent: 'center',
         justifyContent: 'center',
-        borderRadius:responsiveHeight(1),
+        borderRadius: responsiveHeight(1),
     },
     buttonfaq: {
         width: '90%',
