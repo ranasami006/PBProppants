@@ -161,7 +161,7 @@ export default class Login extends Component {
                                 <Text style={[styles.headertext1, { marginTop: 0 }]}>Email</Text>
                                 <TextInput
                                     style={styles.textinput}
-                                    placeholder={'Enter your email'}
+                                    placeholder={'Enter your user name'}
                                     placeholderTextColor={'grey'}
                                     onSubmitEditing={() => this._password.focus()}
                                     returnKeyType="next"

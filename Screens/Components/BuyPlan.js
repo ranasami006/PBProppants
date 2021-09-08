@@ -8,7 +8,12 @@ import { Header } from 'react-native-elements'
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import YoutubePlayer from 'react-native-youtube-iframe';
 const windowWidth = Dimensions.get('window').width;
+
+
+
+
 const windowHeight = Dimensions.get('window').height;
+
 
 export default class BuyPlan extends Component {
     constructor(props) {
@@ -44,7 +49,7 @@ export default class BuyPlan extends Component {
                                         onPress={() => this.props.navigation.navigate('ViewTutorial')}
                                         style={styles.buttonaccount}>
 
-                                        <Text style={styles.textaccount}>View Toturial</Text>
+                                        <Text style={styles.textaccount}>Video Toturial</Text>
                                     </TouchableOpacity>
                                 }
                                 rightComponent={

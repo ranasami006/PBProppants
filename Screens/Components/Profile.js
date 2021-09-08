@@ -169,7 +169,7 @@ export default class Profile extends Component {
                         </ImageBackground>
                         <View style={styles.bottomView}>
                             <Text style={{ fontSize: 30, fontWeight: '700', textAlign: 'center', marginTop: responsiveHeight(1) }}> Profile Update </Text>
-                            <Text style={{ fontSize: 14, fontWeight: '400', textAlign: 'center', marginTop: responsiveHeight(0) }}> Update your profile here</Text>
+                            <Text style={{ fontSize: 14, fontWeight: '400', textAlign: 'center', marginTop: responsiveHeight(0) }}> Update your profile he</Text>
                             <View style={styles.formView}>
                                 <Text style={[styles.headertext1, { marginTop: 0 }]}>Username:</Text>
                                 <TextInput
