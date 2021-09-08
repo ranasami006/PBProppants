@@ -168,7 +168,7 @@ export default class FormUpload extends Component {
                                         start={[0, 0]}
                                         end={[1, 1]}
                                         style={styles.gradient}>
-                                        <Text style={styles.text}>Click hehe to your upload with awal form</Text>
+                                        <Text style={styles.text}>Click here to your upload withdrawal form</Text>
                                     </LinearGradient>
                                 </TouchableOpacity>
                                 <TouchableOpacity

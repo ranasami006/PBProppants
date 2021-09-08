@@ -224,8 +224,12 @@ export default class InvestmentPage extends Component {
                                                     width: "95%", padding: 2.5,
 
                                                 }} >
-                                                    <Text style={styles.headertext}>{item['investment name']}</Text>
-                                                    <Text style={styles.headertext}>{item['investment class']}</Text>
+                                                    <View style={{flex:0.7}}>
+                                                        <Text style={styles.headertext}>{item['investment name']}</Text>
+                                                    </View>
+                                                    <View style={{flex:0.4,alignSelf:'center',marginLeft:10,alignItems:'center'}}>
+                                                        <Text style={styles.headertext}>{item['investment class']}</Text>
+                                                    </View>
                                                 </View>
                                                 <Text style={{
                                                     textAlign: 'left',
